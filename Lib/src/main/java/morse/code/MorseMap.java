@@ -7,16 +7,21 @@ import static morse.code.Signal.WORD_STOP;
 import java.util.Arrays;
 import java.util.List;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableBiMap;
 
 final class MorseMap {
+
     private MorseMap() {}
 
     public final static List<Signal> get(final Character c) {
         return map.get(Character.toUpperCase(c));
     }
 
-    private static final ImmutableMap<Character, List<Signal>> map = ImmutableMap.<Character, List<Signal>> builder()
+    public final static Character get(final List<Signal> message) {
+        return map.inverse().get(message);
+    }
+
+    private final static ImmutableBiMap<Character, List<Signal>> map = ImmutableBiMap.<Character, List<Signal>> builder()
             .put(Character.valueOf('A'), Arrays.asList(DOT, DASH))
             .put(Character.valueOf('B'), Arrays.asList(DASH, DOT, DOT, DOT))
             .put(Character.valueOf('C'), Arrays.asList(DASH, DOT, DASH, DOT))
@@ -85,7 +90,6 @@ final class MorseMap {
             .put(Character.valueOf('Ż'), Arrays.asList(DASH, DASH, DOT, DOT, DASH))
 
             .put(Character.valueOf(' '), Arrays.asList(WORD_STOP))
-
             .build();
 
 }

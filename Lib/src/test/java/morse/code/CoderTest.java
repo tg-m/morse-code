@@ -39,13 +39,32 @@ public class CoderTest {
 
     @Test
     public void encode_tomek() {
-        final Coder c = new Coder();
+        final Codec c = new Codec();
         final List<Signal> actual = c.encode("TOMEK");
         final List<Signal> expected = Arrays.asList(DASH, SIGN_STOP, DASH, DASH, DASH, SIGN_STOP, DASH, DASH, SIGN_STOP, DOT, SIGN_STOP,
                 DASH, DOT, DASH);
 
         Assert.assertTrue(Iterables.elementsEqual(expected, actual));
 
+    }
+
+    @Test
+    public void encode_decode_valid_signs() {
+        final Codec c = new Codec();
+        final String expected = ("akjsdfaksjdbf aksd fkasjdb fkasjdb f 1234567890-=_+!,./?;: ' \" ()&$@ qwertyuioplkjhgfdsamnbvcxz"
+                .toUpperCase());
+        final String actual = c.decode(c.encode(expected));
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void encode_decode_invalid_signs() {
+        final Codec c = new Codec();
+        final String expected = "";
+        final String actual = c.decode(c.encode("<>{}[]|*^%~`"));
+
+        Assert.assertEquals(expected, actual);
     }
 
 }

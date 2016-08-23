@@ -39,6 +39,14 @@ public class MorseMapTest {
     }
 
     @Test
+    public void test_letter_A_reverse() {
+        final Character actual = MorseMap.get(Arrays.asList(DOT, DASH));
+        final Character expected = 'A';
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
     public void test_word_stop() {
         final List<Signal> actual = MorseMap.get(' ');
         final List<Signal> expected = Arrays.asList(WORD_STOP);

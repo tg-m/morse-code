@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import morse.code.Coder;
+import morse.code.Codec;
 import morse.code.Signal;
 
 public class JF extends JFrame {
@@ -23,7 +23,7 @@ public class JF extends JFrame {
     private final JPanel     contentPane;
     private final JTextField inputText;
     private final JLabel     outputLabel = new JLabel("");
-    private final Coder      coder       = new Coder();
+    private final Codec      coder       = new Codec();
 
     /**
      * Launch the application.
