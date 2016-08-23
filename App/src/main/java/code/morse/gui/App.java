@@ -22,6 +22,7 @@ public class App {
         f.add(new SomeDemoPanelFoundInTheWeb());
         f.pack();
         f.setVisible(true);
+        //cos
     }
 
 }
