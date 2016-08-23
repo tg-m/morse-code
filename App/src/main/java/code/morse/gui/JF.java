@@ -87,9 +87,16 @@ public class JF extends JFrame {
             if (Signal.DASH == s) {
                 result += "-";
             }
-            else {
+            else if (Signal.DOT == s) {
                 result += ".";
             }
+            else if (Signal.SIGN_STOP == s) {
+                result += " ";
+            }
+            else {
+                result += "/";
+            }
+
         }
 
         return result;

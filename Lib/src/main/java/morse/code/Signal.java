@@ -1,5 +1,8 @@
 package morse.code;
 
 public enum Signal {
-	DASH, DOT
+                    DASH,
+                    DOT,
+                    SIGN_STOP,
+                    WORD_STOP
 }

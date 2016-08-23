@@ -2,6 +2,7 @@ package morse.code;
 
 import static morse.code.Signal.DASH;
 import static morse.code.Signal.DOT;
+import static morse.code.Signal.WORD_STOP;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,6 +54,38 @@ final class MorseMap {
             .put(Character.valueOf('8'), Arrays.asList(DASH, DASH, DASH, DOT, DOT))
             .put(Character.valueOf('9'), Arrays.asList(DASH, DASH, DASH, DASH, DOT))
             .put(Character.valueOf('0'), Arrays.asList(DASH, DASH, DASH, DASH, DASH))
+
+            .put(Character.valueOf('.'), Arrays.asList(DOT, DASH, DOT, DASH, DOT, DASH))
+            .put(Character.valueOf(','), Arrays.asList(DASH, DASH, DOT, DOT, DASH, DASH))
+            .put(Character.valueOf('?'), Arrays.asList(DOT, DOT, DASH, DASH, DOT, DOT))
+            .put(Character.valueOf('\''), Arrays.asList(DOT, DASH, DASH, DASH, DASH, DOT))
+            .put(Character.valueOf('!'), Arrays.asList(DASH, DOT, DASH, DOT, DASH, DASH))
+            .put(Character.valueOf('/'), Arrays.asList(DASH, DOT, DOT, DASH, DOT))
+            .put(Character.valueOf('('), Arrays.asList(DASH, DOT, DASH, DASH, DOT))
+            .put(Character.valueOf(')'), Arrays.asList(DASH, DOT, DASH, DASH, DOT, DASH))
+            .put(Character.valueOf('&'), Arrays.asList(DOT, DASH, DOT, DOT, DOT))
+            .put(Character.valueOf(':'), Arrays.asList(DASH, DASH, DASH, DOT, DOT, DOT))
+            .put(Character.valueOf(';'), Arrays.asList(DASH, DOT, DASH, DOT, DASH, DOT))
+            .put(Character.valueOf('='), Arrays.asList(DASH, DOT, DOT, DOT, DASH))
+            .put(Character.valueOf('+'), Arrays.asList(DOT, DASH, DOT, DASH, DOT))
+            .put(Character.valueOf('-'), Arrays.asList(DASH, DOT, DOT, DOT, DOT, DASH))
+            .put(Character.valueOf('_'), Arrays.asList(DOT, DOT, DASH, DASH, DOT, DASH))
+            .put(Character.valueOf('"'), Arrays.asList(DOT, DASH, DOT, DOT, DASH, DOT))
+            .put(Character.valueOf('$'), Arrays.asList(DOT, DOT, DOT, DASH, DOT, DOT, DASH))
+            .put(Character.valueOf('@'), Arrays.asList(DOT, DASH, DASH, DOT, DASH, DOT))
+
+            .put(Character.valueOf('Ą'), Arrays.asList(DOT, DASH, DOT, DASH))
+            .put(Character.valueOf('Ć'), Arrays.asList(DASH, DOT, DASH, DOT, DASH))
+            .put(Character.valueOf('Ę'), Arrays.asList(DOT, DOT, DASH, DOT, DOT))
+            .put(Character.valueOf('Ł'), Arrays.asList(DOT, DASH, DOT, DOT, DASH))
+            .put(Character.valueOf('Ń'), Arrays.asList(DASH, DASH, DOT, DASH, DASH))
+            .put(Character.valueOf('Ó'), Arrays.asList(DASH, DASH, DASH, DOT))
+            .put(Character.valueOf('Ś'), Arrays.asList(DOT, DOT, DOT, DASH, DOT, DOT, DOT))
+            .put(Character.valueOf('Ź'), Arrays.asList(DASH, DASH, DOT, DOT, DASH, DOT))
+            .put(Character.valueOf('Ż'), Arrays.asList(DASH, DASH, DOT, DOT, DASH))
+
+            .put(Character.valueOf(' '), Arrays.asList(WORD_STOP))
+
             .build();
 
 }

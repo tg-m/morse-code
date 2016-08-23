@@ -5,6 +5,7 @@ package morse.code;
 
 import static morse.code.Signal.DASH;
 import static morse.code.Signal.DOT;
+import static morse.code.Signal.SIGN_STOP;
 
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +41,8 @@ public class CoderTest {
     public void encode_tomek() {
         final Coder c = new Coder();
         final List<Signal> actual = c.encode("TOMEK");
-        final List<Signal> expected = Arrays.asList(DASH, DASH, DASH, DASH, DASH, DASH, DOT, DASH, DOT, DASH);
+        final List<Signal> expected = Arrays.asList(DASH, SIGN_STOP, DASH, DASH, DASH, SIGN_STOP, DASH, DASH, SIGN_STOP, DOT, SIGN_STOP,
+                DASH, DOT, DASH);
 
         Assert.assertTrue(Iterables.elementsEqual(expected, actual));
 
