@@ -4,7 +4,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.common.collect.ImmutableBiMap;
+
 public class Codec {
+    private final ImmutableBiMap<Signal, Character> map;
+
+    public Codec(final ImmutableBiMap<Signal, Character> printingMap) {
+        this.map = printingMap;
+    }
+
+    public Codec() {
+        this(ImmutableBiMap.<Signal, Character> builder()
+                .put(Signal.DASH, '-')
+                .put(Signal.DOT, '.')
+                .put(Signal.SIGN_STOP, ' ')
+                .put(Signal.WORD_STOP, '/')
+                .build());
+    }
 
     public List<Signal> encode(final String text) {
         final List<Signal> result = new ArrayList<Signal>();
@@ -53,5 +69,28 @@ public class Codec {
         }
 
         return result.toString();
+    }
+
+    public String toString(final List<Signal> signals) {
+        String result = "";
+
+        for (final Signal s : signals) {
+            result += map.get(s);
+        }
+
+        return result;
+    }
+
+    public List<Signal> toSignal(final String message) {
+        final List<Signal> result = new ArrayList<Signal>();
+
+        for (int i = 0; i < message.length(); ++i) {
+            final Signal s = map.inverse().get(message.charAt(i));
+            if (null != s) {
+                result.add(s);
+            }
+        }
+
+        return result;
     }
 }

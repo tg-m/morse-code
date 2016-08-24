@@ -29,14 +29,14 @@ public final class AudioMorseCoder {
     private final int                                  volume;
 
     public AudioMorseCoder(final int volume, final double beepFrequency, final int samplingFrequency, final int channels,
-            final int sampleSizeInBytes, final double dotTimeInSecods) {
+            final int sampleSizeInBytes, final double dotTimeInSeconds) {
         this.volume = volume > 100 ? 100 : volume < 0 ? 0 : volume;
         this.frequency = beepFrequency;
         this.samplingFrequency = samplingFrequency;
         this.channels = channels;
         this.sampleSizeInBytes = sampleSizeInBytes;
         this.normalisedFreq = frequency / this.samplingFrequency;
-        this.dotTimeInSamples = (int) (dotTimeInSecods * this.samplingFrequency);
+        this.dotTimeInSamples = (int) (dotTimeInSeconds * this.samplingFrequency);
     }
 
     public AudioMorseCoder(final int volume) {
@@ -94,6 +94,34 @@ public final class AudioMorseCoder {
             }
         }
         return result;
+    }
+
+    public double getFrequency() {
+        return frequency;
+    }
+
+    public int getSamplingFrequency() {
+        return samplingFrequency;
+    }
+
+    public int getChannels() {
+        return channels;
+    }
+
+    public int getSampleSizeInBytes() {
+        return sampleSizeInBytes;
+    }
+
+    public double getNormalisedFreq() {
+        return normalisedFreq;
+    }
+
+    public int getDotTimeInSamples() {
+        return dotTimeInSamples;
+    }
+
+    public int getVolume() {
+        return volume;
     }
 
 }

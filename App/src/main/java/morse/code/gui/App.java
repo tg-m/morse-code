@@ -82,7 +82,7 @@ public class App extends JFrame {
 
     void encodeAndPrint() {
         final List<Signal> message = coder.encode(inputText.getText());
-        outputLabel.setText(App.toString(message));
+        outputLabel.setText(coder.toString(message));
         try {
             player.play(message);
         }
@@ -91,27 +91,4 @@ public class App extends JFrame {
         }
 
     }
-
-    static String toString(final List<Signal> signals) {
-        String result = "";
-
-        for (final Signal s : signals) {
-            if (Signal.DASH == s) {
-                result += "-";
-            }
-            else if (Signal.DOT == s) {
-                result += ".";
-            }
-            else if (Signal.SIGN_STOP == s) {
-                result += " ";
-            }
-            else {
-                result += "/";
-            }
-
-        }
-
-        return result;
-    }
-
 }

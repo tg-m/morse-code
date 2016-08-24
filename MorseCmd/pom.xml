@@ -6,7 +6,7 @@
 		<artifactId>parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>App</artifactId>
+	<artifactId>MorseCmd</artifactId>
 
 	<dependencies>
 		<dependency>
@@ -14,7 +14,8 @@
 			<artifactId>Lib</artifactId>
 		</dependency>
 	</dependencies>
-
+	
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -26,7 +27,7 @@
 						<manifest>
 						<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>morse.code.gui.App</mainClass>
+							<mainClass>morse.code.cmd.MorseCmd</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

@@ -11,22 +11,19 @@ import javax.sound.sampled.SourceDataLine;
 import morse.code.Signal;
 
 public final class MorseCodePlayer {
-    private final int     samplingRate    = 44100;
-    private final double  beepFrequency   = 660.0;
-    private final int     volume          = 40;
-    private final int     channels        = 2;
+    private final AudioMorseCoder audioMorseCoder;
 
-    private final double  dotTimeInSecods = 0.15;
-    private final int     sampleSize      = 2;
-
-    final AudioMorseCoder audioMorseCoder = new AudioMorseCoder(volume, beepFrequency, samplingRate, channels, sampleSize, dotTimeInSecods);
+    public MorseCodePlayer(final AudioMorseCoder audioMorseCoder) {
+        this.audioMorseCoder = audioMorseCoder;
+    }
 
     public MorseCodePlayer() {
-
+        this(new AudioMorseCoder(40, 660.0, 44100, 2, 2, 0.15));
     }
 
     public void play(final List<Signal> message) throws InterruptedException, LineUnavailableException {
-        final AudioFormat format = new AudioFormat(samplingRate, sampleSize * 8, channels, true, true);
+        final AudioFormat format = new AudioFormat(audioMorseCoder.getSamplingFrequency(), audioMorseCoder.getSampleSizeInBytes() * 8,
+                audioMorseCoder.getChannels(), true, true);
         final DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
 
         if (!AudioSystem.isLineSupported(info)) {

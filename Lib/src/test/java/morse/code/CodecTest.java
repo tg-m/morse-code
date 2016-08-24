@@ -6,6 +6,7 @@ package morse.code;
 import static morse.code.Signal.DASH;
 import static morse.code.Signal.DOT;
 import static morse.code.Signal.SIGN_STOP;
+import static morse.code.Signal.WORD_STOP;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +24,7 @@ import com.google.common.collect.Iterables;
  * @author tgm
  *
  */
-public class CoderTest {
+public class CodecTest {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {}
@@ -65,6 +66,24 @@ public class CoderTest {
         final String actual = c.decode(c.encode("<>{}[]|*^%~`"));
 
         Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void test_toString() {
+        final Codec c = new Codec();
+        final String actual = c.toString(Arrays.asList(DOT, DASH, SIGN_STOP, WORD_STOP));
+        final String expected = ".- /";
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void test_toSignal() {
+        final Codec c = new Codec();
+        final List<Signal> actual = c.toSignal(".- /");
+        final List<Signal> expected = Arrays.asList(DOT, DASH, SIGN_STOP, WORD_STOP);
+
+        Assert.assertTrue(Iterables.elementsEqual(expected, actual));
     }
 
 }
