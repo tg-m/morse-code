@@ -1,4 +1,4 @@
-package code.morse.gui.examples;
+package morse.code.gui.examples;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;

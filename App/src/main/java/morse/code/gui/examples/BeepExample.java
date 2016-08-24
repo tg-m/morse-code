@@ -1,4 +1,4 @@
-package code.morse.gui.examples;
+package morse.code.gui.examples;
 
 import javax.sound.sampled.LineUnavailableException;
 
