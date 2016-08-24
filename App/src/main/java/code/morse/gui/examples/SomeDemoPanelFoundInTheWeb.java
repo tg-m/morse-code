@@ -1,4 +1,4 @@
-package code.morse.gui;
+package code.morse.gui.examples;
 
 import java.awt.Color;
 import java.awt.Dimension;
