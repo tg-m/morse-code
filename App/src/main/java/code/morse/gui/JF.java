@@ -17,7 +17,10 @@ import javax.swing.border.EmptyBorder;
 
 import morse.code.Codec;
 import morse.code.Signal;
+import morse.code.audio.MorseCodePlayer;
+
 import javax.swing.SwingConstants;
+import javax.sound.sampled.LineUnavailableException;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -28,15 +31,16 @@ import java.awt.Font;
 import javax.swing.border.TitledBorder;
 import javax.swing.UIManager;
 import java.awt.Color;
+import javax.swing.JTextArea;
 
 public class JF extends JFrame {
 
     private final JPanel     contentPane;
-    private final JTextField inputText;
     private final JLabel     outputLabel = new JLabel("");
     private final Codec      coder       = new Codec();
-    private JTextField textField;
-
+    private final JTextArea  outputText = new JTextArea();
+    private final JTextArea  inputText = new JTextArea();
+    MorseCodePlayer          player      = new MorseCodePlayer();
     /**
      * Launch the application.
      */
@@ -77,13 +81,13 @@ public class JF extends JFrame {
         GroupLayout gl_contentPane = new GroupLayout(contentPane);
         gl_contentPane.setHorizontalGroup(
         	gl_contentPane.createParallelGroup(Alignment.LEADING)
-        		.addGroup(gl_contentPane.createSequentialGroup()
+        		.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
         			.addContainerGap()
         			.addComponent(panel, GroupLayout.DEFAULT_SIZE, 959, Short.MAX_VALUE)
         			.addContainerGap())
         );
         gl_contentPane.setVerticalGroup(
-        	gl_contentPane.createParallelGroup(Alignment.LEADING)
+        	gl_contentPane.createParallelGroup(Alignment.TRAILING)
         		.addGroup(gl_contentPane.createSequentialGroup()
         			.addGap(7)
         			.addComponent(panel, GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)
@@ -91,44 +95,94 @@ public class JF extends JFrame {
         );
                 
                         final JButton btnEncode = new JButton("Przet\u0142umacz");
-                        panel.add(btnEncode);
-                        btnEncode.addMouseListener(new MouseAdapter() {
-                            @Override
-                            public void mouseClicked(final MouseEvent e) {
-                                encodeAndPrint();
-                            }
+                        btnEncode.addActionListener(new ActionListener() {
+                        	public void actionPerformed(ActionEvent e) {
+                        		encodeAndPrint();
+                        	}
                         });
+                       // btnEncode.addMouseListener(new MouseAdapter() {
+                       //     @Override
+                       //     public void mouseClicked(final MouseEvent e) {
+                       //         encodeAndPrint();
+                       //     }
+                       // });
                 
-                JButton btnNewButton = new JButton("Odtw\u00F3rz");
-                panel.add(btnNewButton);
-                
-                JButton btnNewButton_1 = new JButton("Stop");
-                panel.add(btnNewButton_1);
-                
-                textField = new JTextField();
-                panel.add(textField);
-                textField.setEditable(false);
-                textField.setColumns(10);
-        
-                inputText = new JTextField();
-                panel.add(inputText);
-                inputText.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(final ActionEvent e) {
-                        encodeAndPrint();
-                    }
+                JButton btnPlay = new JButton("Odtw\u00F3rz");
+                btnPlay.addActionListener(new ActionListener() {
+                	public void actionPerformed(ActionEvent e) {
+                		final List<Signal> message = coder.encode(inputText.getText());
+                		try {
+                            player.play(message);
+                        }
+                        catch (InterruptedException | LineUnavailableException e1) {
+                            e1.printStackTrace();
+                        }
+                	}
                 });
-                inputText.setColumns(10);
                 
-                JButton btnNewButton_2 = new JButton("Zapisz");
-                panel.add(btnNewButton_2);
-                panel.add(outputLabel);
+                JButton btnStop = new JButton("Stop");
+                
+                
+//                inputText.addActionListener(new ActionListener() {
+   //                 @Override
+   //                 public void actionPerformed(final ActionEvent e) {
+   //                     encodeAndPrint();
+  //                  }
+  //              });
+       //         inputText.setColumns(10);
+                
+                JButton btnSave = new JButton("Zapisz");
+                inputText.setLineWrap(true);
+                outputText.setLineWrap(true);
+                Font textFieldFont = new Font("Courier New", Font.PLAIN, 20);
+                inputText.setFont(textFieldFont);
+                outputText.setFont(textFieldFont);
+                GroupLayout gl_panel = new GroupLayout(panel);
+                gl_panel.setHorizontalGroup(
+                	gl_panel.createParallelGroup(Alignment.LEADING)
+                		.addGroup(gl_panel.createSequentialGroup()
+                			.addGap(760)
+                			.addComponent(outputLabel))
+                		.addGroup(gl_panel.createSequentialGroup()
+                			.addGap(56)
+                			.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING, false)
+                				.addComponent(outputText, Alignment.LEADING)
+                				.addComponent(inputText, Alignment.LEADING)
+                				.addGroup(Alignment.LEADING, gl_panel.createSequentialGroup()
+                					.addComponent(btnEncode, GroupLayout.PREFERRED_SIZE, 177, GroupLayout.PREFERRED_SIZE)
+                					.addGap(48)
+                					.addComponent(btnPlay, GroupLayout.PREFERRED_SIZE, 171, GroupLayout.PREFERRED_SIZE)
+                					.addGap(53)
+                					.addComponent(btnStop, GroupLayout.PREFERRED_SIZE, 152, GroupLayout.PREFERRED_SIZE)
+                					.addGap(62)
+                					.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 152, GroupLayout.PREFERRED_SIZE))))
+                );
+                gl_panel.setVerticalGroup(
+                	gl_panel.createParallelGroup(Alignment.LEADING)
+                		.addGroup(gl_panel.createSequentialGroup()
+                			.addGap(17)
+                			.addComponent(outputLabel)
+                			.addGap(15)
+                			.addComponent(inputText, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE)
+                			.addGap(29)
+                			.addComponent(outputText, GroupLayout.PREFERRED_SIZE, 142, GroupLayout.PREFERRED_SIZE)
+                			.addGap(35)
+                			.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+                				.addComponent(btnEncode, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE)
+                				.addGroup(gl_panel.createSequentialGroup()
+                					.addGap(3)
+                					.addComponent(btnPlay, GroupLayout.PREFERRED_SIZE, 62, GroupLayout.PREFERRED_SIZE))
+                				.addComponent(btnStop, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE)
+                				.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE)))
+                );
+                panel.setLayout(gl_panel);
         contentPane.setLayout(gl_contentPane);
        
     }
 
     void encodeAndPrint() {
-        outputLabel.setText(JF.toString(coder.encode(inputText.getText())));
+        outputText.setText(JF.toString(coder.encode(inputText.getText())));
+        contentPane.repaint();
     }
 
     static String toString(final List<Signal> signals) {
@@ -138,8 +192,12 @@ public class JF extends JFrame {
             if (Signal.DASH == s) {
                 result += "-";
             }
-            else {
+            else if (Signal.DOT == s){
                 result += ".";
+            }
+            else
+            {
+            	result += " | ";
             }
         }
 
