@@ -1,5 +1,9 @@
 package morse.code;
 
+import static morse.code.Signal.DASH;
+import static morse.code.Signal.DOT;
+import static morse.code.Signal.WORD_STOP;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,9 +31,25 @@ public class MorseMapTest {
     public void tearDown() throws Exception {}
 
     @Test
-    public void testGet_A() {
+    public void test_letter_A() {
         final List<Signal> actual = MorseMap.get('A');
-        final List<Signal> expected = Arrays.asList(Signal.DOT, Signal.DASH);
+        final List<Signal> expected = Arrays.asList(DOT, DASH);
+
+        Assert.assertTrue(Iterables.elementsEqual(expected, actual));
+    }
+
+    @Test
+    public void test_letter_A_reverse() {
+        final Character actual = MorseMap.get(Arrays.asList(DOT, DASH));
+        final Character expected = 'A';
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void test_word_stop() {
+        final List<Signal> actual = MorseMap.get(' ');
+        final List<Signal> expected = Arrays.asList(WORD_STOP);
 
         Assert.assertTrue(Iterables.elementsEqual(expected, actual));
     }
@@ -45,11 +65,39 @@ public class MorseMapTest {
     }
 
     @Test
+    public void test_all__polish_letters_are_in_the_map() {
+        final List<Character> letters = Arrays.asList('Ą', 'Ę', 'Ó', 'Ś', 'Ł', 'Ż', 'Ź', 'Ć', 'Ń');
+
+        for (final Character c : letters) {
+            Assert.assertNotNull(MorseMap.get(c));
+        }
+    }
+
+    @Test
     public void test_all_numbers_are_in_the_map() {
         final List<Character> numbers = Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
 
         for (final Character c : numbers) {
             Assert.assertNotNull(MorseMap.get(c));
+        }
+    }
+
+    @Test
+    public void test_signs_that_are_in_the_morse_alphabet() {
+        final List<Character> signs = Arrays.asList(',', '.', '!', '@', '$', '&', '(', ')', '_', '-', '+', '=', ':', '"', ';', '?', ',',
+                '.', '/', '\'');
+
+        for (final Character c : signs) {
+            Assert.assertNotNull(MorseMap.get(c));
+        }
+    }
+
+    @Test
+    public void test_signs_that_are_not_in_the_alphabet() {
+        final List<Character> signs = Arrays.asList('~', '#', '%', '^', '*', '[', ']', '\\', '{', '}', '|', '<', '>');
+
+        for (final Character c : signs) {
+            Assert.assertNull(MorseMap.get(c));
         }
     }
 

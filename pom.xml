@@ -11,6 +11,7 @@
 	<modules>
 		<module>./Lib</module>
 		<module>./App</module>
+		<module>./MorseCmd</module>
 	</modules>
 	
 	<dependencyManagement>
