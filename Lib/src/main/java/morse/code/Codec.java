@@ -32,7 +32,9 @@ public class Codec {
             }
 
             for (int i = 1; i < text.length(); ++i) {
-                result.add(Signal.SIGN_STOP);
+                if (' ' != text.charAt(i) && ' ' != text.charAt(i - 1)) {
+                    result.add(Signal.SIGN_STOP);
+                }
                 c = MorseMap.get(text.charAt(i));
                 if (null != c) {
                     result.addAll(c);

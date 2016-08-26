@@ -34,20 +34,18 @@ public final class MorseCodePlayer {
         final SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info);
 
         final byte[] buffer = audioMorseCoder.getWave(message).array();// constructSineWave(sineWaveFrequency,
-        // samplingRate, lengthInSeconds,
-        // volume, channels,
-        // sampleSize).array();
+
         line.open(format, buffer.length);
 
         int offset = 0;
         line.start();
         while (offset < buffer.length) {
             final int ctSamplesThisPass = line.available();
-            line.write(buffer, offset, ctSamplesThisPass);
+
+            line.write(buffer, offset, Math.min(ctSamplesThisPass, buffer.length - offset));
 
             offset += ctSamplesThisPass;
 
-            // Wait until the buffer is at least half empty before we add more
             while (line.getBufferSize() / 7 < line.available()) {
                 Thread.sleep(1);
             }
