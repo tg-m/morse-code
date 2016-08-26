@@ -26,7 +26,7 @@
 						<manifest>
 						<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>morse.code.gui.App</mainClass>
+							<mainClass>code.morse.gui.JF</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
