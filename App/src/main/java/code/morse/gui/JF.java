@@ -29,20 +29,20 @@ import morse.code.io.WaveOut;
 
 public class JF extends JFrame {
 
-    private final JPanel    contentPane;
-    private final JLabel    outputLabel       = new JLabel("");
-    private final Codec     coder             = new Codec();
-    private final JTextArea outputText        = new JTextArea();
-    private final JTextArea inputText         = new JTextArea();
+    private final JPanel          contentPane;
+    private final JLabel          outputLabel       = new JLabel("");
+    private final Codec           coder             = new Codec();
+    private final JTextArea       outputText        = new JTextArea();
+    private final JTextArea       inputText         = new JTextArea();
 
-    private final int       samplingFrequency = 44100;
-    private final int       sampleSizeInBytes = 2;
-    private final int       channels          = 2;
-    AudioMorseCoder         audioMorseCoder   = new AudioMorseCoder(40, 440.0, samplingFrequency, channels, sampleSizeInBytes, 0.25);
-    MorseCodePlayer         player            = new MorseCodePlayer(audioMorseCoder);
-    private final WaveOut   waveOut           = new WaveOut(samplingFrequency, sampleSizeInBytes, channels);
+    private final int             samplingFrequency = 44100;
+    private final int             sampleSizeInBytes = 2;
+    private final int             channels          = 2;
+    private final AudioMorseCoder audioMorseCoder   = new AudioMorseCoder(40, 440.0, samplingFrequency, channels, sampleSizeInBytes, 0.25);
+    private final MorseCodePlayer player            = new MorseCodePlayer(audioMorseCoder);
+    private final WaveOut         waveOut           = new WaveOut(samplingFrequency, sampleSizeInBytes, channels);
 
-    List<Signal>            message;
+    private List<Signal>          message;
 
     /**
      * Launch the application.
