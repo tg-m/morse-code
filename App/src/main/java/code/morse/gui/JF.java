@@ -5,6 +5,8 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -21,16 +23,26 @@ import javax.swing.border.TitledBorder;
 
 import morse.code.Codec;
 import morse.code.Signal;
+import morse.code.audio.AudioMorseCoder;
 import morse.code.audio.MorseCodePlayer;
+import morse.code.io.WaveOut;
 
 public class JF extends JFrame {
 
     private final JPanel    contentPane;
-    private final JLabel    outputLabel = new JLabel("");
-    private final Codec     coder       = new Codec();
-    private final JTextArea outputText  = new JTextArea();
-    private final JTextArea inputText   = new JTextArea();
-    MorseCodePlayer         player      = new MorseCodePlayer();
+    private final JLabel    outputLabel       = new JLabel("");
+    private final Codec     coder             = new Codec();
+    private final JTextArea outputText        = new JTextArea();
+    private final JTextArea inputText         = new JTextArea();
+
+    private final int       samplingFrequency = 44100;
+    private final int       sampleSizeInBytes = 2;
+    private final int       channels          = 2;
+    AudioMorseCoder         audioMorseCoder   = new AudioMorseCoder(40, 440.0, samplingFrequency, channels, sampleSizeInBytes, 0.25);
+    MorseCodePlayer         player            = new MorseCodePlayer(audioMorseCoder);
+    private final WaveOut   waveOut           = new WaveOut(samplingFrequency, sampleSizeInBytes, channels);
+
+    List<Signal>            message;
 
     /**
      * Launch the application.
@@ -101,7 +113,7 @@ public class JF extends JFrame {
         btnPlay.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final List<Signal> message = coder.encode(inputText.getText());
+                encodeAndPrint();
                 try {
                     player.play(message);
                 }
@@ -122,6 +134,16 @@ public class JF extends JFrame {
         // inputText.setColumns(10);
 
         final JButton btnSave = new JButton("Zapisz");
+        btnSave.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(final MouseEvent e) {
+                encodeAndPrint();
+                final String fileName = "/tmp/file.wav";
+                // TODO: Set-up a dialog (?) to chose an output file.
+                waveOut.save(audioMorseCoder.getWave(message).array(), fileName);
+            }
+        });
+
         inputText.setLineWrap(true);
         outputText.setEditable(false);
         outputText.setLineWrap(true);
@@ -170,7 +192,8 @@ public class JF extends JFrame {
     }
 
     void encodeAndPrint() {
-        outputText.setText(JF.toString(coder.encode(inputText.getText())));
+        message = coder.encode(inputText.getText());
+        outputText.setText(JF.toString(message));
         contentPane.repaint();
     }
 
