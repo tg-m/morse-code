@@ -12,6 +12,7 @@ import morse.code.Signal;
 
 public final class MorseCodePlayer {
     private final AudioMorseCoder audioMorseCoder;
+    public volatile Boolean play = false;
 
     public MorseCodePlayer(final AudioMorseCoder audioMorseCoder) {
         this.audioMorseCoder = audioMorseCoder;
@@ -20,8 +21,13 @@ public final class MorseCodePlayer {
     public MorseCodePlayer() {
         this(new AudioMorseCoder(40, 660.0, 44100, 2, 2, 0.15));
     }
+    public void stop()
+    {
+    	play = false;
+    }
 
     public void play(final List<Signal> message) throws InterruptedException, LineUnavailableException {
+    	play = true;
         final AudioFormat format = new AudioFormat(audioMorseCoder.getSamplingFrequency(), audioMorseCoder.getSampleSizeInBytes() * 8,
                 audioMorseCoder.getChannels(), true, true);
         final DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
@@ -39,7 +45,7 @@ public final class MorseCodePlayer {
 
         int offset = 0;
         line.start();
-        while (offset < buffer.length) {
+        while (play && offset < buffer.length) {
             final int ctSamplesThisPass = line.available();
 
             line.write(buffer, offset, Math.min(ctSamplesThisPass, buffer.length - offset));
