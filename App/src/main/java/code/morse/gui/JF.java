@@ -7,12 +7,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.List;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -181,9 +183,14 @@ public class JF extends JFrame{
 			@Override
 			public void mouseClicked(final MouseEvent e) {
 				encodeAndPrint();
-				final String fileName = "/tmp/file.wav";
-				// TODO: Set-up a dialog (?) to chose an output file.
-				waveOut.save(audioMorseCoder.getWave(message).array(), fileName);
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setSelectedFile(new File("file.wav"));
+				if (fileChooser.showSaveDialog(panel) == JFileChooser.APPROVE_OPTION) {
+					  File file = fileChooser.getSelectedFile();
+					  String test = file.getAbsolutePath();
+					 waveOut.save(audioMorseCoder.getWave(message).array(), file.getAbsolutePath());
+					}
+				
 			}
 		});
 		Font textFieldFont = new Font("Courier New", Font.PLAIN, 20);
