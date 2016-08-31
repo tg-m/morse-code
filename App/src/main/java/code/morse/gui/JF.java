@@ -1,36 +1,55 @@
 package code.morse.gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.List;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import morse.code.Codec;
 import morse.code.Signal;
+import morse.code.audio.AudioMorseCoder;
 import morse.code.audio.MorseCodePlayer;
+import morse.code.io.WaveOut;
 
 public class JF extends JFrame {
 
-    private final JPanel    contentPane;
-    private final JLabel    outputLabel = new JLabel("");
-    private final Codec     coder       = new Codec();
-    private final JTextArea outputText  = new JTextArea();
-    private final JTextArea inputText   = new JTextArea();
-    MorseCodePlayer         player      = new MorseCodePlayer();
+    private final JPanel          contentPane;
+    private final Codec           coder             = new Codec();
+    private final JTextArea       outputText        = new JTextArea();
+    private final JTextArea       inputText         = new JTextArea();
+
+    private Task                  task;
+    Thread                        playerThread;
+
+    private final int             samplingFrequency = 44100;
+    private final int             sampleSizeInBytes = 2;
+    private final int             channels          = 2;
+    private final AudioMorseCoder audioMorseCoder   = new AudioMorseCoder(40, 440.0, samplingFrequency, channels, sampleSizeInBytes, 0.25);
+    private final MorseCodePlayer player            = new MorseCodePlayer(audioMorseCoder);
+    private final WaveOut         waveOut           = new WaveOut(samplingFrequency, sampleSizeInBytes, channels);
+
+    private List<Signal>          message;
 
     /**
      * Launch the application.
@@ -50,12 +69,31 @@ public class JF extends JFrame {
         });
     }
 
+    class Task extends SwingWorker<Void, Void> {
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            final List<Signal> message = coder.encode(inputText.getText());
+            try {
+                player.play(message);
+            }
+            catch (InterruptedException | LineUnavailableException e1) {
+                e1.printStackTrace();
+            }
+
+            return null;
+        }
+
+    }
+
     /**
      * Create the frame.
      */
     public JF() {
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 1021, 616);
+        setMinimumSize(new Dimension(1051, 616));
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 
@@ -67,7 +105,7 @@ public class JF extends JFrame {
         panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "T\u0142umacz", TitledBorder.LEADING, TitledBorder.TOP,
                 null, new Color(0, 0, 0)));
 
-        ((javax.swing.border.TitledBorder) panel.getBorder()).setTitleFont(new Font("C", Font.PLAIN, 12));
+        ((javax.swing.border.TitledBorder) panel.getBorder()).setTitleFont(new Font("C", Font.PLAIN, 14));
         panel.repaint();
         final GroupLayout gl_contentPane = new GroupLayout(contentPane);
         gl_contentPane.setHorizontalGroup(
@@ -101,17 +139,21 @@ public class JF extends JFrame {
         btnPlay.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final List<Signal> message = coder.encode(inputText.getText());
-                try {
-                    player.play(message);
-                }
-                catch (InterruptedException | LineUnavailableException e1) {
-                    e1.printStackTrace();
-                }
+                encodeAndPrint();
+                task = new Task();
+                // task.addPropertyChangeListener(this);
+                task.execute();
             }
         });
 
         final JButton btnStop = new JButton("Stop");
+        btnStop.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+
+                player.stop();
+            }
+        });
 
         // inputText.addActionListener(new ActionListener() {
         // @Override
@@ -122,55 +164,84 @@ public class JF extends JFrame {
         // inputText.setColumns(10);
 
         final JButton btnSave = new JButton("Zapisz");
-        inputText.setLineWrap(true);
-        outputText.setEditable(false);
-        outputText.setLineWrap(true);
+        btnSave.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(final MouseEvent e) {
+                encodeAndPrint();
+                final JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setSelectedFile(new File("file.wav"));
+                if (fileChooser.showSaveDialog(panel) == JFileChooser.APPROVE_OPTION) {
+                    final File file = fileChooser.getSelectedFile();
+                    final String test = file.getAbsolutePath();
+                    waveOut.save(audioMorseCoder.getWave(message).array(), file.getAbsolutePath());
+                }
+
+            }
+        });
         final Font textFieldFont = new Font("Courier New", Font.PLAIN, 20);
-        inputText.setFont(textFieldFont);
-        outputText.setFont(textFieldFont);
+
+        final JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        final JScrollPane scrollPane_1 = new JScrollPane();
         final GroupLayout gl_panel = new GroupLayout(panel);
         gl_panel.setHorizontalGroup(
                 gl_panel.createParallelGroup(Alignment.LEADING)
                         .addGroup(gl_panel.createSequentialGroup()
-                                .addGap(760)
-                                .addComponent(outputLabel))
-                        .addGroup(gl_panel.createSequentialGroup()
-                                .addGap(56)
-                                .addGroup(gl_panel.createParallelGroup(Alignment.TRAILING, false)
-                                        .addComponent(outputText, Alignment.LEADING)
-                                        .addComponent(inputText, Alignment.LEADING)
-                                        .addGroup(Alignment.LEADING, gl_panel.createSequentialGroup()
-                                                .addComponent(btnEncode, GroupLayout.PREFERRED_SIZE, 177, GroupLayout.PREFERRED_SIZE)
-                                                .addGap(48)
-                                                .addComponent(btnPlay, GroupLayout.PREFERRED_SIZE, 171, GroupLayout.PREFERRED_SIZE)
-                                                .addGap(53)
-                                                .addComponent(btnStop, GroupLayout.PREFERRED_SIZE, 152, GroupLayout.PREFERRED_SIZE)
-                                                .addGap(62)
-                                                .addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 152, GroupLayout.PREFERRED_SIZE)))));
+                                .addGap(50)
+                                .addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+                                        .addGroup(gl_panel.createSequentialGroup()
+                                                .addComponent(btnEncode, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
+                                                .addGap(50)
+                                                .addComponent(btnPlay, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
+                                                .addGap(50)
+                                                .addComponent(btnStop, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
+                                                .addGap(50)
+                                                .addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
+                                                .addGap(0, 0, Short.MAX_VALUE))
+                                        .addComponent(scrollPane, Alignment.TRAILING)
+                                        .addComponent(scrollPane_1, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 898, Short.MAX_VALUE))
+                                .addGap(61)));
         gl_panel.setVerticalGroup(
                 gl_panel.createParallelGroup(Alignment.LEADING)
                         .addGroup(gl_panel.createSequentialGroup()
-                                .addGap(17)
-                                .addComponent(outputLabel)
-                                .addGap(15)
-                                .addComponent(inputText, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE)
-                                .addGap(29)
-                                .addComponent(outputText, GroupLayout.PREFERRED_SIZE, 142, GroupLayout.PREFERRED_SIZE)
+                                .addGap(35)
+                                .addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                                .addGap(35)
+                                .addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
                                 .addGap(35)
                                 .addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-                                        .addComponent(btnEncode, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE)
+
                                         .addGroup(gl_panel.createSequentialGroup()
-                                                .addGap(3)
-                                                .addComponent(btnPlay, GroupLayout.PREFERRED_SIZE, 62, GroupLayout.PREFERRED_SIZE))
-                                        .addComponent(btnStop, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE))));
+
+                                                .addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+                                                        .addComponent(btnEncode, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(btnPlay, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(btnStop, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 70,
+                                                                GroupLayout.PREFERRED_SIZE))))
+                                .addGap(35)));
+        final Font buttonFont = new Font("C", Font.PLAIN, 16);
+        btnEncode.setFont(buttonFont);
+        btnPlay.setFont(buttonFont);
+        btnSave.setFont(buttonFont);
+        btnStop.setFont(buttonFont);
+        outputText.setEditable(false);
+
+        scrollPane_1.setViewportView(outputText);
+        outputText.setLineWrap(true);
+        outputText.setFont(textFieldFont);
+        scrollPane.setViewportView(inputText);
+        inputText.setLineWrap(true);
+        inputText.setFont(textFieldFont);
         panel.setLayout(gl_panel);
         contentPane.setLayout(gl_contentPane);
 
     }
 
     void encodeAndPrint() {
-        outputText.setText(JF.toString(coder.encode(inputText.getText())));
+        message = coder.encode(inputText.getText());
+        outputText.setText(JF.toString(message));
         contentPane.repaint();
     }
 

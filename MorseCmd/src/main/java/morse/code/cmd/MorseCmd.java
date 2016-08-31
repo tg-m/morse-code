@@ -8,6 +8,7 @@ import morse.code.Codec;
 import morse.code.Signal;
 import morse.code.audio.AudioMorseCoder;
 import morse.code.audio.MorseCodePlayer;
+import morse.code.io.WaveOut;
 
 public class MorseCmd {
     private final static int volume            = 40;
@@ -19,6 +20,8 @@ public class MorseCmd {
 
     public static void main(final String[] args) {
         final String message = args.length > 0 ? args[0] : "SOS";
+
+        final String fileName = args.length > 1 ? args[1] : "";
 
         final AudioMorseCoder audioMorseCoder = new AudioMorseCoder(volume, beepFrequency, samplingFrequency, channels, sampleSizeInBytes,
                 dotTimeInSeconds);
@@ -35,6 +38,14 @@ public class MorseCmd {
         }
         catch (InterruptedException | LineUnavailableException e) {
             e.printStackTrace();
+        }
+
+        if ("" != fileName) {
+            System.out.println("Saving to: " + fileName);
+            final WaveOut waveOut = new WaveOut(samplingFrequency, sampleSizeInBytes, channels);
+
+            final byte[] output = audioMorseCoder.getWave(signal).array();
+            waveOut.save(output, fileName);
         }
     }
 
