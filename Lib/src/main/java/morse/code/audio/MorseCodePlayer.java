@@ -41,7 +41,7 @@ public final class MorseCodePlayer {
 
         final byte[] buffer = audioMorseCoder.getWave(message).array();// constructSineWave(sineWaveFrequency,
 
-        line.open(format, buffer.length);
+        line.open(format, 88100);//buffer.length);
 
         int offset = 0;
         line.start();

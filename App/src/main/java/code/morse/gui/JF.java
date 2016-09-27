@@ -9,6 +9,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -61,7 +63,7 @@ public class JF extends JFrame{
 	private final int             samplingFrequency = 44100;
 	private final int             sampleSizeInBytes = 2;
 	private final int             channels          = 2;
-	private final AudioMorseCoder audioMorseCoder   = new AudioMorseCoder(40, 440.0, samplingFrequency, channels, sampleSizeInBytes, 0.25);
+	private final AudioMorseCoder audioMorseCoder   = new AudioMorseCoder(40, 440.0, samplingFrequency, channels, sampleSizeInBytes, 0.5);
 	private final MorseCodePlayer player            = new MorseCodePlayer(audioMorseCoder);
 	private final WaveOut         waveOut           = new WaveOut(samplingFrequency, sampleSizeInBytes, channels);
 
@@ -90,7 +92,17 @@ public class JF extends JFrame{
 
 		@Override
 		protected Void doInBackground() throws Exception {
-			final List<Signal> message = coder.encode(inputText.getText());
+			String textToEncode;
+			if (isMorse(inputText.getText()))
+			{
+				textToEncode = inputText.getText();
+			}
+			else
+			{
+				textToEncode = outputText.getText();
+			}
+			
+			final List<Signal> message = coder.encode(textToEncode);
 			try {
 				player.play(message);
 			}
@@ -130,7 +142,7 @@ public class JF extends JFrame{
 				gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
 						.addContainerGap()
-						.addComponent(panel, GroupLayout.DEFAULT_SIZE, 959, Short.MAX_VALUE)
+						.addComponent(panel, GroupLayout.DEFAULT_SIZE, 959,  Short.MAX_VALUE)
 						.addContainerGap()));
 		gl_contentPane.setVerticalGroup(
 				gl_contentPane.createParallelGroup(Alignment.TRAILING)
@@ -257,9 +269,35 @@ public class JF extends JFrame{
 	}
 
 	void encodeAndPrint() {
-		message = coder.encode(inputText.getText());
-		outputText.setText(JF.toString(message));
+		if (!isMorse(inputText.getText()))
+		{
+			message = coder.encode(inputText.getText());
+			
+			outputText.setText(JF.toString(message));
+		}
+		else
+		{
+			String result = coder.decode(coder.toSignal(inputText.getText()));
+			
+			message = coder.toSignal(inputText.getText());
+			
+			outputText.setText(result);
+		}
+		
 		contentPane.repaint();
+	}
+
+	private boolean isMorse(String text) {
+		List<Character> possibleChars = new LinkedList<Character>();
+		possibleChars.add('-'); possibleChars.add('.'); possibleChars.add(' '); possibleChars.add('/');
+		
+		char[] textAsArray = text.toCharArray();
+		
+		for (char c : textAsArray) {
+			if (!possibleChars.contains(c))
+				return false;
+		}
+		return true;
 	}
 
 	static String toString(final List<Signal> signals) {
