@@ -86,7 +86,7 @@ public class JF extends JFrame {
 				textToEncode = outputText.getText();
 			}
 			
-			final List<Signal> message = coder.encode(textToEncode);
+			final List<Signal> message = coder.toSignal(textToEncode);
 			try {
 				player.play(message);
 			}
