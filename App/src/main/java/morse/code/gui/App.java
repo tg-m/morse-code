@@ -86,7 +86,10 @@ public class App extends JFrame {
         try {
             player.play(message);
         }
-        catch (InterruptedException | LineUnavailableException e) {
+        catch (final InterruptedException e) {
+            e.printStackTrace();
+        }
+        catch (final LineUnavailableException e) {
             e.printStackTrace();
         }
 

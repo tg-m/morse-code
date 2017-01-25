@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,7 +43,6 @@ public class JF extends JFrame {
     private Task                  task;
     Thread                        playerThread;
 
-
     private final int             samplingFrequency = 44100;
     private final int             sampleSizeInBytes = 2;
     private final int             channels          = 2;
@@ -74,25 +72,26 @@ public class JF extends JFrame {
 
     class Task extends SwingWorker<Void, Void> {
 
-		@Override
-		protected Void doInBackground() throws Exception {
-			String textToEncode;
-			if (isMorse(inputText.getText()))
-			{
-				textToEncode = inputText.getText();
-			}
-			else
-			{
-				textToEncode = outputText.getText();
-			}
-			
-			final List<Signal> message = coder.toSignal(textToEncode);
-			try {
-				player.play(message);
-			}
-			catch (InterruptedException | LineUnavailableException e1) {
-				e1.printStackTrace();
-			}
+        @Override
+        protected Void doInBackground() throws Exception {
+            String textToEncode;
+            if (isMorse(inputText.getText())) {
+                textToEncode = inputText.getText();
+            }
+            else {
+                textToEncode = outputText.getText();
+            }
+
+            final List<Signal> message = coder.toSignal(textToEncode);
+            try {
+                player.play(message);
+            }
+            catch (final InterruptedException e1) {
+                e1.printStackTrace();
+            }
+            catch (final LineUnavailableException e1) {
+                e1.printStackTrace();
+            }
             return null;
         }
 
@@ -117,24 +116,22 @@ public class JF extends JFrame {
         panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "T\u0142umacz", TitledBorder.LEADING, TitledBorder.TOP,
                 null, new Color(0, 0, 0)));
 
+        ((javax.swing.border.TitledBorder) panel.getBorder()).setTitleFont(new Font("C", Font.PLAIN, 14));
+        panel.repaint();
+        final GroupLayout gl_contentPane = new GroupLayout(contentPane);
+        gl_contentPane.setHorizontalGroup(
+                gl_contentPane.createParallelGroup(Alignment.LEADING)
+                        .addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(panel, GroupLayout.DEFAULT_SIZE, 959, Short.MAX_VALUE)
+                                .addContainerGap()));
+        gl_contentPane.setVerticalGroup(
+                gl_contentPane.createParallelGroup(Alignment.TRAILING)
+                        .addGroup(gl_contentPane.createSequentialGroup()
+                                .addGap(7)
+                                .addComponent(panel, GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)
+                                .addContainerGap()));
 
-		((javax.swing.border.TitledBorder) panel.getBorder()).setTitleFont(new Font("C", Font.PLAIN, 14));
-		panel.repaint();
-		final GroupLayout gl_contentPane = new GroupLayout(contentPane);
-		gl_contentPane.setHorizontalGroup(
-				gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
-						.addContainerGap()
-						.addComponent(panel, GroupLayout.DEFAULT_SIZE, 959,  Short.MAX_VALUE)
-						.addContainerGap()));
-		gl_contentPane.setVerticalGroup(
-				gl_contentPane.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-						.addGap(7)
-						.addComponent(panel, GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)
-						.addContainerGap())
-				);
-		
         final JButton btnEncode = new JButton("Przet\u0142umacz");
         btnEncode.addActionListener(new ActionListener() {
             @Override
@@ -253,41 +250,42 @@ public class JF extends JFrame {
 
     }
 
+    void encodeAndPrint() {
+        if (!isMorse(inputText.getText())) {
+            message = coder.encode(inputText.getText());
 
-	void encodeAndPrint() {
-		if (!isMorse(inputText.getText()))
-		{
-			message = coder.encode(inputText.getText());
-			
-			outputText.setText(JF.toString(message));
-		}
-		else
-		{
-			String result = coder.decode(coder.toSignal(inputText.getText()));
-			
-			message = coder.toSignal(inputText.getText());
-			
-			outputText.setText(result);
-		}
-		
-		contentPane.repaint();
-	}
+            outputText.setText(JF.toString(message));
+        }
+        else {
+            final String result = coder.decode(coder.toSignal(inputText.getText()));
 
-	private boolean isMorse(String text) {
-		List<Character> possibleChars = new LinkedList<Character>();
-		possibleChars.add('-'); possibleChars.add('.'); possibleChars.add(' '); possibleChars.add('/');
-		
-		char[] textAsArray = text.toCharArray();
-		
-		for (char c : textAsArray) {
-			if (!possibleChars.contains(c))
-				return false;
-		}
-		return true;
-	}
+            message = coder.toSignal(inputText.getText());
 
-	static String toString(final List<Signal> signals) {
-		String result = "";
+            outputText.setText(result);
+        }
+
+        contentPane.repaint();
+    }
+
+    private boolean isMorse(final String text) {
+        final List<Character> possibleChars = new LinkedList<Character>();
+        possibleChars.add('-');
+        possibleChars.add('.');
+        possibleChars.add(' ');
+        possibleChars.add('/');
+
+        final char[] textAsArray = text.toCharArray();
+
+        for (final char c : textAsArray) {
+            if (!possibleChars.contains(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static String toString(final List<Signal> signals) {
+        String result = "";
         for (final Signal s : signals) {
             if (Signal.DASH == s) {
                 result += "-";

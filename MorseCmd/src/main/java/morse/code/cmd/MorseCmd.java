@@ -36,7 +36,10 @@ public class MorseCmd {
         try {
             player.play(signal);
         }
-        catch (InterruptedException | LineUnavailableException e) {
+        catch (final InterruptedException e) {
+            e.printStackTrace();
+        }
+        catch (final LineUnavailableException e) {
             e.printStackTrace();
         }
 
