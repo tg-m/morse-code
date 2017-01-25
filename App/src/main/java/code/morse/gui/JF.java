@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -73,14 +74,24 @@ public class JF extends JFrame {
 
         @Override
         protected Void doInBackground() throws Exception {
-            final List<Signal> message = coder.encode(inputText.getText());
+            String textToEncode;
+            if (isMorse(inputText.getText())) {
+                textToEncode = inputText.getText();
+            }
+            else {
+                textToEncode = outputText.getText();
+            }
+
+            final List<Signal> message = coder.toSignal(textToEncode);
             try {
                 player.play(message);
             }
-            catch (InterruptedException | LineUnavailableException e1) {
+            catch (final InterruptedException e1) {
                 e1.printStackTrace();
             }
-
+            catch (final LineUnavailableException e1) {
+                e1.printStackTrace();
+            }
             return null;
         }
 
@@ -240,14 +251,41 @@ public class JF extends JFrame {
     }
 
     void encodeAndPrint() {
-        message = coder.encode(inputText.getText());
-        outputText.setText(JF.toString(message));
+        if (!isMorse(inputText.getText())) {
+            message = coder.encode(inputText.getText());
+
+            outputText.setText(JF.toString(message));
+        }
+        else {
+            final String result = coder.decode(coder.toSignal(inputText.getText()));
+
+            message = coder.toSignal(inputText.getText());
+
+            outputText.setText(result);
+        }
+
         contentPane.repaint();
+    }
+
+    private boolean isMorse(final String text) {
+        final List<Character> possibleChars = new LinkedList<Character>();
+        possibleChars.add('-');
+        possibleChars.add('.');
+        possibleChars.add(' ');
+        possibleChars.add('/');
+
+        final char[] textAsArray = text.toCharArray();
+
+        for (final char c : textAsArray) {
+            if (!possibleChars.contains(c)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     static String toString(final List<Signal> signals) {
         String result = "";
-
         for (final Signal s : signals) {
             if (Signal.DASH == s) {
                 result += "-";
@@ -262,7 +300,6 @@ public class JF extends JFrame {
                 result += "   /   ";
             }
         }
-
         return result;
     }
 }

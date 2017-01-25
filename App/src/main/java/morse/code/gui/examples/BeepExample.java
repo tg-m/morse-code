@@ -16,7 +16,10 @@ public class BeepExample {
         try {
             player.play(new Codec().encode(message));
         }
-        catch (InterruptedException | LineUnavailableException e) {
+        catch (final InterruptedException e) {
+            e.printStackTrace();
+        }
+        catch (final LineUnavailableException e) {
             e.printStackTrace();
         }
     }
